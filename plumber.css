@@ -1,0 +1,59 @@
+html, body {
+    height: 100%;
+}
+
+table.PlumberTable {
+    margin-top: 40px;
+    position: relative;
+    float:left;
+    border: 2px solid #1C6EA4;
+    background-color: #EEEEEE;
+    text-align: center;
+    border-collapse: collapse;
+}
+table.PlumberTable td {
+    border: 1px solid #005500;
+    width:42px;
+    height:42px;
+    margin:0;
+    padding:0;
+}
+
+#game-control {
+    position: relative;
+    float:left;
+    margin-left: 40px;
+    height: 350px;
+    width: 185px;
+    border: 2px solid red;
+    padding: 10px;
+}
+
+#control-next-pipe {
+    margin-left: 20px;
+}
+
+.pipe-image {
+    margin:0;
+    padding:0;
+    width:40px;
+    height:40px;
+}
+
+.gameButton {
+  margin-top: 10px;
+  border: 2px solid black;
+  border-color: #2196F3;
+  color: dodgerblue
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+.gameButton:hover {
+  background: #2196F3;
+  color: white;
+}

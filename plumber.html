@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8">
+  <title>Plumber game</title>
+  <link rel="stylesheet" type="text/css" href="plumber.css"/>
+  <script type="text/javascript" src="plumber.js"></script>
+</head>
+<body>
+  <table class="PlumberTable" id="VisibleTable"></table>
+  <br>
+  
+  <div id="game-control">
+    <h1>PLUMBER</h1>
+    <button class="gameButton" onclick="newGame();return false">
+      New Game</button>
+    <p style="margin-top:20px;">
+      Next block:
+    <span id="control-next-pipe">
+    </span>
+    <p style="margin-top:20px;">
+      Game timer: <span id="control-timer"></span>
+      <br>
+      Blocks used: <span id="control-block_count"></span>
+    </p>
+    <button class="gameButton" onclick="calcScore();return false">
+      Calculate Score</button>
+    <input id="control-score" type="text"
+	    minlength="4" maxlength="7" size="6"> 
+  </div>
+
+  <script>
+    var gameClock = 0;
+    var gameBlockCount = 0;
+    var countdownId = null;
+
+    function calcScore() {
+        //alert("calcScore");
+        clearInterval(timerId);
+        Plumber.getScore(document.getElementById('control-score'));
+    }
+    
+    function newGame() {
+        Plumber.initGame();
+        gameClock = 0;
+        gameBlockCount = 0;
+	document.getElementById('control-block_count').innerHTML = gameBlockCount;
+        if (countdownId) { clearInterval(countdownId); }
+	document.getElementById('control-timer').innerHTML = gameClock;
+        timerId = window.setInterval(function(){tick();}, 1000);
+	document.getElementById('control-next-pipe').innerHTML = Plumber.pickRandomPipe();
+    }
+
+    function tick() {
+	gameClock += 1;
+	document.getElementById('control-timer').innerHTML = gameClock;
+    }
+    
+
+    // selects the cell clicked on by the user
+    function selectCell(event) {
+	//var x = event.clientX;
+	//var y = event.clientY;
+	//alert("X coords: " + x + ", Y coords: " + y);
+	// Javascript hack -- resolution of 'this' goes up call stack
+	var fields = this.id.split('-');
+	var row = fields[1];
+	var col = fields[2];
+	//alert("select row=" + row + " col=" + col);
+	var cell = document.getElementById('cell-' + row + '-' + col);
+	//cell.style.background = 'orange';
+	var cnp = document.getElementById("control-next-pipe");
+        cell.innerHTML = cnp.innerHTML;
+        cell.setAttribute("data", Plumber.getPipeType());
+        cnp.innerHTML = Plumber.pickRandomPipe();
+        gameBlockCount += 1;
+        var scoreObject = document.getElementById('control-score');
+        var score = parseInt(scoreObject.value) - 5;
+        scoreObject.value = score;
+        document.getElementById('control-score').value;
+	document.getElementById('control-block_count').innerHTML = gameBlockCount;
+    }
+
+    newGame();
+  </script>
+
+  <div id="countbox1"></div>
+
+</body>
+</html>
