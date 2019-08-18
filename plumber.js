@@ -3,10 +3,6 @@
 var Plumber = (function() {
     const MaxRows = 10;
     const MaxCols = 15;
-    const ROW_START = 4;
-    const COL_START = 2;
-    const ROW_DRAIN = 4;
-    const COL_DRAIN = 12;
     const BLOCK_TYPE_CROSS = 1;
     const BLOCK_TYPE_ELBOW_NE = 2;
     const BLOCK_TYPE_ELBOW_NW = 3;
@@ -15,10 +11,6 @@ var Plumber = (function() {
     const BLOCK_TYPE_HORIZONTAL = 6;
     const BLOCK_TYPE_VERTICAL = 7;
     const AllPipes = [
-	{ 'img':"pipe_cross.jpg",
-	  'score':50,
-	  'pipetype':BLOCK_TYPE_CROSS,
-	},
 	{ 'img':"pipe_elbow_ne.jpg",
 	  'score':30,
 	  'pipetype':BLOCK_TYPE_ELBOW_NE,
@@ -35,6 +27,10 @@ var Plumber = (function() {
 	  'score':30,
 	  'pipetype':BLOCK_TYPE_ELBOW_SW,
 	},
+	{ 'img':"pipe_cross.jpg",
+	  'score':50,
+	  'pipetype':BLOCK_TYPE_CROSS,
+	},
 	{ 'img':"pipe_horizontal.jpg",
 	  'score':40,
 	  'pipetype':BLOCK_TYPE_HORIZONTAL,
@@ -44,12 +40,31 @@ var Plumber = (function() {
 	  'pipetype':BLOCK_TYPE_VERTICAL,
 	},
     ];
-    var flowDirection = null;
-    var currentPipeType = 0;
+    var ROW_START;
+    var COL_START;
+    var ROW_DRAIN;
+    var COL_DRAIN;
+    var flowDirection;
+    var currentPipeType;
 
 
-    function initGame() {
+    function initGame(randomStart) {
 	//alert('initGame');
+	if (randomStart) {
+	    ROW_START = Math.floor(Math.random() * MaxRows);
+	    COL_START = Math.floor(Math.random() * (MaxCols-1));
+	    ROW_DRAIN = Math.floor(Math.random() * MaxRows);
+	    COL_DRAIN = Math.floor(Math.random() * MaxCols);
+	    while ((ROW_START == ROW_DRAIN) && (COL_START == COL_DRAIN)) {
+		ROW_DRAIN = Math.floor(Math.random() * MaxRows);
+		COL_DRAIN = Math.floor(Math.random() * MaxCols);
+	    }
+	} else {
+	    ROW_START = 4;
+	    COL_START = 2;
+	    ROW_DRAIN = 4;
+	    COL_DRAIN = 12;
+	}
 	document.getElementById('control-score').value = 0;
 
 	var gameTable = document.getElementById('VisibleTable');
@@ -121,7 +136,14 @@ var Plumber = (function() {
 	var cellStartID = 'cell-' + ROW_START + '-' +  COL_START;
 	var cell = document.getElementById(cellStartID);
 	var score = parseInt(obj.value);
-	score += parseInt(cell.getAttribute("data")); // initial score
+	var scoreStart = parseInt(cell.getAttribute("data")); // initial score
+	if (scoreStart == 0) {
+	    // score was already calculated, user clicked button twice
+	    return;
+	} else {
+	    score += scoreStart;
+	    cell.setAttribute("data", 0);
+	}
 
 	var row = ROW_START;
 	var col = COL_START;
@@ -146,31 +168,35 @@ var Plumber = (function() {
 	    //alert("calcScore row=" + row + " col=" + col);
 	    
 	    if ((row < 0) || (row >= MaxRows)) {
+		// show spill?
 		break;
 	    }
 	    if ((col < 0) || (col >= MaxCols)) {
+		// show spill?
 		break;
 	    }
 
 	    if (row == ROW_DRAIN && col == COL_DRAIN) {
 		//alert("reached drain");
-		score += 500;
+		score += 800;
 		break;
 	    }
 
 	    var cellID = 'cell-' + row + '-' +  col;
 	    var cell = document.getElementById(cellID);
-	    //cell.style.background = 'orange';
 	    var pipetype = cell.getAttribute("data");
 	    if (pipetype == null) {
 		score -= 10;
 		flowEnded = true;
+		cell.style.background = "red";
 		break;
 	    }
 	    var str = cell.innerHTML;
 	    var newstr = str.replace(/.jpg/, '_fill.jpg');
 	    cell.innerHTML = newstr;
 	    switch (parseInt(pipetype)) {
+	    case 0:
+		break;
 	    case BLOCK_TYPE_CROSS:
 		break;
 	    case BLOCK_TYPE_ELBOW_NE:
@@ -222,7 +248,9 @@ var Plumber = (function() {
 	    default:
 		alert("unknown pipetype=" + pipetype);
 	    }
-	    if (!flowEnded) {
+	    if (flowEnded) {
+		cell.style.background = "red";
+	    } else {
 		score += getPipeScore(pipetype);
 		obj.value = score;
 		await sleep(100);

@@ -13,8 +13,10 @@
   
   <div id="game-control">
     <h1>PLUMBER</h1>
-    <button class="gameButton" onclick="newGame();return false">
+    <button class="gameButton" onclick="newGame(false);return false">
       New Game</button>
+    <button class="gameButton" onclick="newGame(true);return false">
+      Random</button>
     <p style="margin-top:20px;">
       Next block:
     <span id="control-next-pipe">
@@ -41,8 +43,8 @@
         Plumber.getScore(document.getElementById('control-score'));
     }
     
-    function newGame() {
-        Plumber.initGame();
+    function newGame(randomStart=false) {
+        Plumber.initGame(randomStart);
         gameClock = 0;
         gameBlockCount = 0;
 	document.getElementById('control-block_count').innerHTML = gameBlockCount;
