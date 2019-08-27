@@ -18,9 +18,8 @@
     <button class="gameButton" onclick="newGame(true);return false">
       Random</button>
     <p style="margin-top:20px;">
-      Next block:
-    <span id="control-next-pipe">
-    </span>
+      Next piece:
+    <span id="control-next-piece"> </span>
     <p style="margin-top:20px;">
       Game timer: <span id="control-timer"></span>
       <br>
@@ -28,18 +27,18 @@
     </p>
     <button class="gameButton" onclick="calcScore();return false">
       Calculate Score</button>
-    <input id="control-score" type="text"
-	    minlength="4" maxlength="7" size="6"> 
+    <input id="control-score" type="text" minlength="4" maxlength="6" size="5"> 
   </div>
 
   <script>
     var gameClock = 0;
+    var timerId = null;
     var gameBlockCount = 0;
     var countdownId = null;
 
     function calcScore() {
         //alert("calcScore");
-        clearInterval(timerId);
+        window.clearInterval(timerId);
         Plumber.getScore(document.getElementById('control-score'));
     }
     
@@ -50,8 +49,9 @@
 	document.getElementById('control-block_count').innerHTML = gameBlockCount;
         if (countdownId) { clearInterval(countdownId); }
 	document.getElementById('control-timer').innerHTML = gameClock;
+        window.clearInterval(timerId);
         timerId = window.setInterval(function(){tick();}, 1000);
-	document.getElementById('control-next-pipe').innerHTML = Plumber.pickRandomPipe();
+	document.getElementById('control-next-piece').innerHTML = Plumber.pickRandomPipe();
     }
 
     function tick() {
@@ -72,7 +72,7 @@
 	//alert("select row=" + row + " col=" + col);
 	var cell = document.getElementById('cell-' + row + '-' + col);
 	//cell.style.background = 'orange';
-	var cnp = document.getElementById("control-next-pipe");
+	var cnp = document.getElementById("control-next-piece");
         cell.innerHTML = cnp.innerHTML;
         cell.setAttribute("data", Plumber.getPipeType());
         cnp.innerHTML = Plumber.pickRandomPipe();

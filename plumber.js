@@ -44,7 +44,6 @@ var Plumber = (function() {
     var COL_START;
     var ROW_DRAIN;
     var COL_DRAIN;
-    var flowDirection;
     var currentPipeType;
 
 
@@ -92,8 +91,7 @@ var Plumber = (function() {
 	var cellStart = document.getElementById(cellStartID);
 	cellStart.innerHTML = '<img class="pipe-image" src="img/right-arrow.png">';	
 	cellStart.onclick = doNothing;
-        cellStart.setAttribute("data", 100);
-	flowDirection = 'e';
+        cellStart.setAttribute("data", 1);
 	
 	var cellDrainID = 'cell-' + ROW_DRAIN + '-' +  COL_DRAIN;
 	var cellEnd = document.getElementById(cellDrainID);
@@ -131,24 +129,23 @@ var Plumber = (function() {
     function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
-    async function calcScore(obj) {
-	var cellStartID = 'cell-' + ROW_START + '-' +  COL_START;
-	var cell = document.getElementById(cellStartID);
-	var score = parseInt(obj.value);
-	var scoreStart = parseInt(cell.getAttribute("data")); // initial score
-	if (scoreStart == 0) {
-	    // score was already calculated, user clicked button twice
-	    return;
-	} else {
-	    score += scoreStart;
-	    cell.setAttribute("data", 0);
-	}
 
+    async function getScore(obj) {
+	var cellStartID = 'cell-' + ROW_START + '-' +  COL_START;
+	var cellStart = document.getElementById(cellStartID);
+	var startData = parseInt(cellStart.getAttribute("data"));
+	if (startData == 0) {
+	    // already got score, user probably clicked button twice
+	    return;
+	}
+	cellStart.setAttribute("data", 0); // mark as scored
+	var score = parseInt(obj.value); // get game's current score
 	var row = ROW_START;
 	var col = COL_START;
-	var flowEnded = false;
-	while (!flowEnded) {
+	var flowDirection = 'e'; // move east from start
+	var flowActive = true;
+
+	while (flowActive) {
 	    switch (flowDirection) {
 	    case 'n':
 		row -= 1;
@@ -179,6 +176,7 @@ var Plumber = (function() {
 	    if (row == ROW_DRAIN && col == COL_DRAIN) {
 		//alert("reached drain");
 		score += 800;
+		obj.value = score;
 		break;
 	    }
 
@@ -187,7 +185,8 @@ var Plumber = (function() {
 	    var pipetype = cell.getAttribute("data");
 	    if (pipetype == null) {
 		score -= 10;
-		flowEnded = true;
+		obj.value = score;
+		flowActive = false;
 		cell.style.background = "red";
 		break;
 	    }
@@ -205,7 +204,7 @@ var Plumber = (function() {
 		} else if (flowDirection == 'e') {
 		    flowDirection = 's';
 		} else {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    case BLOCK_TYPE_ELBOW_NW:
@@ -214,7 +213,7 @@ var Plumber = (function() {
 		} else if (flowDirection == 'w') {
 		    flowDirection = 's';
 		} else {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    case BLOCK_TYPE_ELBOW_SE:
@@ -223,7 +222,7 @@ var Plumber = (function() {
 		} else if (flowDirection == 'e') {
 		    flowDirection = 'n';
 		} else {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    case BLOCK_TYPE_ELBOW_SW:
@@ -232,32 +231,30 @@ var Plumber = (function() {
 		} else if (flowDirection == 'w') {
 		    flowDirection = 'n';
 		} else {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    case BLOCK_TYPE_HORIZONTAL:
 		if ((flowDirection == 'n') || (flowDirection == 's')) {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    case BLOCK_TYPE_VERTICAL:
 		if ((flowDirection == 'e') || (flowDirection == 'w')) {
-		    flowEnded = true;
+		    flowActive = false;
 		}
 		break;
 	    default:
 		alert("unknown pipetype=" + pipetype);
 	    }
-	    if (flowEnded) {
-		cell.style.background = "red";
-	    } else {
+	    if (flowActive) {
 		score += getPipeScore(pipetype);
 		obj.value = score;
 		await sleep(100);
+	    } else {
+		cell.style.background = "red";
 	    }
 	}
-
-	return score;
     }
 
     
@@ -265,6 +262,6 @@ var Plumber = (function() {
 	'initGame': initGame,
 	'pickRandomPipe': pickRandomPipe,
 	'getPipeType': getPipeType,
-	'getScore': calcScore
+	'getScore': getScore
     };
 })();

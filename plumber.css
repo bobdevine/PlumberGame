@@ -7,15 +7,16 @@ table.PlumberTable {
     position: relative;
     float:left;
     border: 2px solid #1C6EA4;
+    border-spacing: 2px;
     background-color: #EEEEEE;
     text-align: center;
     border-collapse: collapse;
 }
 table.PlumberTable td {
     border: 1px solid #005500;
-    width:42px;
-    height:42px;
-    margin:0;
+    width:44px;
+    height:44px;
+    margin: auto;
     padding:0;
 }
 
@@ -26,7 +27,7 @@ table.PlumberTable td {
     margin-left: 40px;
     height: 360px;
     width: 215px;
-    border: 2px solid red;
+    border: 2px solid green;
     padding: 10px;
 }
 
