@@ -13,10 +13,29 @@
   
   <div id="game-control">
     <h1>PLUMBER</h1>
-    <button class="gameButton" onclick="newGame(false);return false">
+    Rows: <select id="rowChoice">
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option selected value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+    </select>
+    <br>
+    Columns: <select id="colChoice">
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option selected value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+    </select>
+    <br>
+    <input type="checkbox" id="randChoice" name="random">Random begin/end<br>
+    <button class="gameButton" onclick="newGame(document.getElementById('rowChoice').value, document.getElementById('colChoice').value, document.getElementById('randChoice').checked)">
       New Game</button>
-    <button class="gameButton" onclick="newGame(true);return false">
-      Random</button>
     <p style="margin-top:20px;">
       Next piece:
     <span id="control-next-piece"> </span>
@@ -42,8 +61,8 @@
         Plumber.getScore(document.getElementById('control-score'));
     }
     
-    function newGame(randomStart=false) {
-        Plumber.initGame(randomStart);
+    function newGame(rowChoice, colChoice, randomChoice=false) {
+        Plumber.initGame(rowChoice, colChoice, randomChoice);
         gameClock = 0;
         gameBlockCount = 0;
 	document.getElementById('control-block_count').innerHTML = gameBlockCount;
@@ -78,13 +97,12 @@
         cnp.innerHTML = Plumber.pickRandomPipe();
         gameBlockCount += 1;
         var scoreObject = document.getElementById('control-score');
-        var score = parseInt(scoreObject.value) - 5;
-        scoreObject.value = score;
-        document.getElementById('control-score').value;
+        scoreObject.value = parseInt(scoreObject.value) - 5;
+        //document.getElementById('control-score').value;
 	document.getElementById('control-block_count').innerHTML = gameBlockCount;
     }
 
-    newGame();
+    newGame(12, 15, false);
   </script>
 
   <div id="countbox1"></div>
