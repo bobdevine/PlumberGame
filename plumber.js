@@ -9,33 +9,40 @@ var Plumber = (function() {
     const BLOCK_TYPE_HORIZONTAL = 6;
     const BLOCK_TYPE_VERTICAL = 7;
     const AllPipes = [
-	{ 'img':"pipe_elbow_ne.jpg",
-	  'score':30,
-	  'pipetype':BLOCK_TYPE_ELBOW_NE,
-	},
-	{ 'img':"pipe_elbow_nw.jpg",
-	  'score':30,
-	  'pipetype':BLOCK_TYPE_ELBOW_NW,
-	},
-	{ 'img':"pipe_elbow_se.jpg",
-	  'score':30,
-	  'pipetype':BLOCK_TYPE_ELBOW_SE,
-	},
-	{ 'img':"pipe_elbow_sw.jpg",
-	  'score':30,
-	  'pipetype':BLOCK_TYPE_ELBOW_SW,
-	},
 	{ 'img':"pipe_cross.jpg",
+	  "percent": 40,
 	  'score':50,
 	  'pipetype':BLOCK_TYPE_CROSS,
 	},
 	{ 'img':"pipe_horizontal.jpg",
+	  "percent": 10,
 	  'score':40,
 	  'pipetype':BLOCK_TYPE_HORIZONTAL,
 	},
 	{ 'img':"pipe_vertical.jpg",
+	  "percent": 10,
 	  'score':40,
 	  'pipetype':BLOCK_TYPE_VERTICAL,
+	},
+	{ 'img':"pipe_elbow_ne.jpg",
+	  "percent": 10,
+	  'score':30,
+	  'pipetype':BLOCK_TYPE_ELBOW_NE,
+	},
+	{ 'img':"pipe_elbow_nw.jpg",
+	  "percent": 10,
+	  'score':30,
+	  'pipetype':BLOCK_TYPE_ELBOW_NW,
+	},
+	{ 'img':"pipe_elbow_se.jpg",
+	  "percent": 10,
+	  'score':30,
+	  'pipetype':BLOCK_TYPE_ELBOW_SE,
+	},
+	{ 'img':"pipe_elbow_sw.jpg",
+	  "percent": 10,
+	  'score':30,
+	  'pipetype':BLOCK_TYPE_ELBOW_SW,
 	},
     ];
     var ROW_START;
@@ -111,9 +118,22 @@ var Plumber = (function() {
     }
     
     function pickRandomPipe() {
-	const pos = Math.floor(Math.random() * AllPipes.length);
-	currentPipeType = AllPipes[pos].pipetype;
-        return '<img class="pipe-image" src="img/' + AllPipes[pos].img + '">';	
+        var share = 100;
+        var idx = 0;
+        var prob = Math.floor(100 * Math.random());
+        while (idx < AllPipes.length) {
+            share -= AllPipes[idx].percent;
+            if (share < 0) {
+                alert("ExpandString: rule percent totals over 100.");
+                share = 0;
+            }
+            if (prob >= share) break;
+            idx += 1;
+        }
+        if (idx == AllPipes.length)
+            idx = AllPipes.length - 1;
+	currentPipeType = AllPipes[idx].pipetype;
+        return '<img class="pipe-image" src="img/' + AllPipes[idx].img + '">';	
     }
 
     function sleep(ms) {
